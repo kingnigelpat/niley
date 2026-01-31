@@ -155,7 +155,7 @@ window.checkout = async () => {
     // 2. Copy to Clipboard with Visual Feedback
     try {
         await navigator.clipboard.writeText(messageLine);
-        showToast("✅ Order copied! Opening Instagram...");
+        showToast("✅ Order copied! Paste it in my Instagram chat — opening Instagram now…");
     } catch (err) {
         console.log("Clipboard not available");
         showToast("⚠️ Copy failed. Please select & copy text manually.");
