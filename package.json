@@ -1,0 +1,15 @@
+{
+  "name": "niley-store",
+  "version": "1.0.0",
+  "description": "Niley E-commerce Store & Admin Panel",
+  "scripts": {
+    "start": "serve .",
+    "dev": "serve ."
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "serve": "^14.2.1"
+  }
+}
