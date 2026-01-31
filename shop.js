@@ -132,6 +132,7 @@ function showToast(message) {
 }
 
 // CHECKOUT (Copy Order & Open DM)
+// CHECKOUT (Copy Order & Open DM)
 window.checkout = async () => {
     if (cart.length === 0) {
         showToast("Your cart is empty!");
@@ -151,23 +152,29 @@ window.checkout = async () => {
     messageLine += `\n💰 *Total Order Value: $${total.toFixed(2)}*`;
     messageLine += "\n\n📍 Please let me know how to proceed with payment and shipping.";
 
-    // 2. Encoded for URL
-    const encodedMessage = encodeURIComponent(messageLine);
-
-    // 3. Copy to Clipboard with Visual Feedback
+    // 2. Copy to Clipboard with Visual Feedback
     try {
         await navigator.clipboard.writeText(messageLine);
-        showToast("✅ Order copied! Hitting IG... Just Paste & Send! 🚀");
+        showToast("✅ Order copied! Opening Instagram...");
     } catch (err) {
         console.log("Clipboard not available");
-        showToast("Opening Instagram...");
+        showToast("⚠️ Copy failed. Please select & copy text manually.");
     }
 
-    // 4. Open DM directly
-    // Delay slightly to let the toast appear and user to process it
+    // 3. Smart Redirect Logic
+    // Detect Mobile Device
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
     setTimeout(() => {
-        const url = `https://ig.me/m/${IG_USERNAME}?text=${encodedMessage}`;
-        window.open(url, '_blank');
+        if (isMobile) {
+            // On mobile, window.location.href is more reliable for triggering 
+            // the 'Open in App' system dialog or deep link.
+            window.location.href = `https://ig.me/m/${IG_USERNAME}`;
+        } else {
+            // On Desktop, open in a new tab so they don't lose the store page.
+            // We use the web direct link which works well on desktop.
+            window.open(`https://ig.me/m/${IG_USERNAME}`, '_blank');
+        }
     }, 2000);
 };
 
