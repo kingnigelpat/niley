@@ -48,9 +48,9 @@
             </button>
         </div>
 
-        <div style="display: grid; grid-template-columns: 1fr 2fr; gap: 40px;">
+        <div class="admin-layout">
             <!-- Editor Form -->
-            <div class="form-container" style="margin: 0; width: 100%; position: sticky; top: 20px;">
+            <div class="form-container admin-form-container">
                 <h3 id="form-title">Add New Product</h3>
                 <form id="product-form">
                     <input type="hidden" id="p-id"> <!-- Hidden ID for edits -->
@@ -89,7 +89,7 @@
             <!-- Product List -->
             <div>
                 <h3>Your Products</h3>
-                <div id="admin-product-list" class="product-grid" style="grid-template-columns: 1fr;">
+                <div id="admin-product-list" class="product-grid admin-product-list">
                     <!-- Items -->
                 </div>
             </div>

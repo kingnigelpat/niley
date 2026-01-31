@@ -416,3 +416,104 @@ header p {
     /* Moves higher up */
     transform: translateX(-50%) scale(1);
 }
+
+/* Admin Layout - Desktop First */
+.admin-layout {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 40px;
+    align-items: start;
+    /* Prevents form from stretching */
+}
+
+.admin-form-container {
+    margin: 0;
+    width: 100%;
+    position: sticky;
+    top: 100px;
+    /* Accounts for nav */
+}
+
+.admin-product-list {
+    grid-template-columns: 1fr !important;
+    /* Force single column for list items always */
+}
+
+/* Media Queries for Responsiveness */
+@media (max-width: 900px) {
+    .container {
+        padding: 30px 20px;
+    }
+
+    nav {
+        padding: 10px 20px;
+    }
+
+    .logo-img {
+        height: 60px;
+    }
+
+    .logo-text {
+        font-size: 1.5rem;
+    }
+
+    .nav-links {
+        gap: 15px;
+    }
+
+    h1 {
+        font-size: 2.5rem;
+    }
+}
+
+@media (max-width: 768px) {
+
+    /* Stack admin layout */
+    .admin-layout {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .admin-form-container {
+        position: relative;
+        /* Disable sticky on mobile */
+        top: 0;
+        margin-bottom: 30px;
+    }
+
+    /* Adjust Cart Modal */
+    .cart-modal {
+        width: 100%;
+        right: -100%;
+        /* Fully hide */
+    }
+
+    /* Simplify Nav */
+    nav {
+        display: flex;
+        justify-content: space-between;
+    }
+
+    .logo-container {
+        gap: 10px;
+        grid-column: auto;
+        /* Reset grid column */
+    }
+
+    .nav-links {
+        justify-content: flex-end;
+        grid-column: auto;
+        /* Reset grid column */
+    }
+}
+
+@media (max-width: 480px) {
+    header h1 {
+        font-size: 2rem;
+    }
+
+    .product-grid {
+        grid-template-columns: 1fr;
+        /* Single column products on phones */
+    }
+}
