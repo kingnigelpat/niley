@@ -54,7 +54,7 @@ loginForm.addEventListener('submit', async (e) => {
     const password = document.getElementById('password').value;
 
     // STRICT ACCESS CONTROL (Front-line defense)
-    const allowedEmails = ['lyvine16@gmail.com', 'patricknigel33@gmail.com', 'admin@niley.com'];
+    const allowedEmails = ['lyvine16@gmail.com', 'patricknigel33@gmail.com', 'niely2423@gmail.com'];
     const requiredPassword = '2029togetherforever';
 
     // 1. Check strict credentials
