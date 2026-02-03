@@ -28,6 +28,35 @@
     --radius: 8px;
     --shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
     /* Soft, premium shadow */
+
+    --input-bg: #FAFAFA;
+    --input-border: #E0E0E0;
+
+    --image-bg: #f0f0f0;
+
+    --btn-text-color: #FFFFFF;
+}
+
+body.dark-mode {
+    --bg-color: #121413;
+    /* Very dark, almost black sage */
+    --card-bg: #1E2320;
+    /* Slightly lighter */
+    --text-color: #ECF0F1;
+    /* Off-white */
+    --text-light: #BDC3C7;
+    --accent-color: #8DA390;
+    /* Muted light sage */
+    --accent-hover: #A3B8A6;
+    --accent-light: #2C352F;
+    --shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+
+    --input-bg: #2C352F;
+    --input-border: #3E4A42;
+
+    --image-bg: #2C352F;
+
+    --btn-text-color: #121413;
 }
 
 html {
@@ -46,6 +75,7 @@ body {
     font-family: var(--font-body);
     line-height: 1.7;
     overflow-x: hidden;
+    transition: background-color 0.3s ease, color 0.3s ease;
 }
 
 h1,
@@ -89,13 +119,20 @@ nav {
     align-items: center;
     padding: 15px 40px;
     /* Wider padding */
-    background-color: rgba(249, 250, 248, 0.95);
+    background-color: var(--bg-color);
+    /* Use variable */
+    opacity: 0.95;
     /* Semi-transparent */
     backdrop-filter: blur(10px);
     position: sticky;
     top: 0;
     z-index: 900;
     border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    transition: background-color 0.3s ease;
+}
+
+body.dark-mode nav {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
 }
 
 .logo-container {
@@ -113,6 +150,11 @@ nav {
     /* Increased size */
     width: auto;
     object-fit: contain;
+}
+
+body.dark-mode .logo-img {
+    filter: invert(1);
+    mix-blend-mode: screen;
 }
 
 .logo-text {
@@ -177,6 +219,44 @@ header p {
     font-weight: 300;
 }
 
+/* Search Bar */
+.search-container {
+    margin-top: 30px;
+    position: relative;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.search-container input {
+    width: 100%;
+    padding: 15px 45px 15px 20px;
+    border-radius: 50px;
+    border: 1px solid var(--input-border);
+    background-color: var(--card-bg);
+    /* Use card bg for contrast against body */
+    color: var(--text-color);
+    font-family: var(--font-body);
+    font-size: 1rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+}
+
+.search-container input:focus {
+    border-color: var(--accent-color);
+    box-shadow: 0 4px 20px rgba(95, 113, 97, 0.2);
+    outline: none;
+}
+
+.search-icon {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--text-light);
+    pointer-events: none;
+}
+
 /* Product Grid */
 .product-grid {
     display: grid;
@@ -189,7 +269,7 @@ header p {
     background: var(--card-bg);
     border-radius: var(--radius);
     padding: 20px;
-    transition: transform 0.4s ease, box-shadow 0.4s ease;
+    transition: transform 0.4s ease, box-shadow 0.4s ease, background-color 0.3s ease;
     border: 1px solid transparent;
 }
 
@@ -206,7 +286,7 @@ header p {
     border-radius: 4px;
     /* Slightly softer corners */
     margin-bottom: 20px;
-    background-color: #f0f0f0;
+    background-color: var(--image-bg);
 }
 
 .product-info h3 {
@@ -235,7 +315,7 @@ header p {
     width: 100%;
     padding: 14px;
     background: var(--accent-color);
-    color: white;
+    color: var(--btn-text-color);
     font-size: 0.9rem;
     text-transform: uppercase;
     letter-spacing: 1px;
@@ -247,6 +327,15 @@ header p {
     background: var(--accent-hover);
     transform: translateY(-2px);
     box-shadow: 0 4px 10px rgba(95, 113, 97, 0.3);
+}
+
+.badge {
+    background: var(--accent-color);
+    color: var(--btn-text-color);
+    padding: 2px 6px;
+    border-radius: 10px;
+    font-size: 0.8rem;
+    margin-left: 5px;
 }
 
 /* Forms */
@@ -275,8 +364,8 @@ header p {
 .form-group textarea {
     width: 100%;
     padding: 12px;
-    background: #FAFAFA;
-    border: 1px solid #E0E0E0;
+    background: var(--input-bg);
+    border: 1px solid var(--input-border);
     color: var(--text-color);
     border-radius: 4px;
     font-family: var(--font-body);
@@ -286,6 +375,20 @@ header p {
 .form-group input:focus {
     border-color: var(--accent-color);
     background: white;
+}
+
+body.dark-mode .form-group input:focus {
+    background: var(--input-bg);
+}
+
+.upload-btn {
+    background-color: var(--image-bg) !important;
+    color: var(--text-color) !important;
+    border: 1px solid var(--input-border) !important;
+}
+
+.upload-btn:hover {
+    background-color: var(--accent-light) !important;
 }
 
 /* Cart Modal - Premium Drawer */
@@ -415,6 +518,66 @@ header p {
     bottom: 80px;
     /* Moves higher up */
     transform: translateX(-50%) scale(1);
+}
+
+/* Intro Overlay */
+.intro-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: var(--bg-color);
+    z-index: 9999;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-align: center;
+    transition: opacity 1s ease, visibility 1s ease;
+}
+
+.intro-overlay.fade-out {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+}
+
+.intro-content {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeInUp 1s ease forwards 0.5s;
+}
+
+.intro-logo {
+    width: 150px;
+    height: auto;
+    margin-bottom: 20px;
+    filter: drop-shadow(0 4px 10px rgba(0, 0, 0, 0.1));
+}
+
+body.dark-mode .intro-logo {
+    filter: invert(1) drop-shadow(0 4px 10px rgba(255, 255, 255, 0.1));
+    mix-blend-mode: screen;
+}
+
+.intro-text {
+    font-family: var(--font-heading);
+    font-size: 1.8rem;
+    color: var(--text-color);
+    margin-bottom: 10px;
+}
+
+.intro-subtext {
+    font-size: 1.1rem;
+    color: var(--text-light);
+}
+
+@keyframes fadeInUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 /* Admin Layout - Desktop First */

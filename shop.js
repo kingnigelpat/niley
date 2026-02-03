@@ -64,6 +64,41 @@ function renderProducts() {
     `).join('');
 }
 
+// SEARCH LOGIC
+window.searchProducts = () => {
+    const query = document.getElementById('search-input').value.toLowerCase();
+    const filteredProducts = products.filter(product =>
+        product.name.toLowerCase().includes(query) ||
+        (product.description && product.description.toLowerCase().includes(query))
+    );
+
+    // Temporarily override the global 'products' variable scope for rendering? 
+    // No, better to pass the list to render. 
+    // Let's refactor renderProducts slightly to accept a list, or just do it here.
+
+    if (filteredProducts.length === 0) {
+        productGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center;">No products match your search.</div>`;
+    } else {
+        renderFiltered(filteredProducts);
+    }
+};
+
+function renderFiltered(list) {
+    productGrid.innerHTML = list.map(product => `
+        <div class="product-card">
+            <img src="${product.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${product.name}" class="product-image">
+            <div class="product-info">
+                <h3>${product.name}</h3>
+                <p>${product.description || 'No description available.'}</p>
+                <span class="price">$${parseFloat(product.price).toFixed(2)}</span>
+                <button class="add-to-cart-btn" onclick="addToCart('${product.id}')">
+                    Add to Cart
+                </button>
+            </div>
+        </div>
+    `).join('');
+}
+
 // CART LOGIC
 window.addToCart = (id) => {
     const product = products.find(p => p.id === id);
