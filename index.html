@@ -37,6 +37,10 @@
 
     <header class="container">
         <h1>Smart Tech. Smarter Living</h1>
+        <p
+            style="color: #FF6B6B; font-family: var(--font-heading); font-style: italic; font-size: 1.3rem; margin-bottom: 5px;">
+            <i class="fas fa-heart" style="color: #FF6B6B; margin-right: 5px;"></i>It's the season of love <i class="fas fa-heart" style="color: #FF6B6B; margin-right: 5px;"></i>
+        </p>
         <p>Elevate your lifestyle with our premium selection of cutting edge appliances.</p>
 
         <div class="search-container">
@@ -118,6 +122,38 @@
                 overlay.classList.add('fade-out');
             }, 3500); // 3.5 seconds
         });
+
+        // Valentine's Animation
+        function createHeart() {
+            const heart = document.createElement('div');
+            heart.classList.add('heart');
+            heart.style.left = Math.random() * 100 + "vw";
+            heart.style.animationDuration = Math.random() * 2 + 3 + "s"; // 3-5s
+            heart.style.opacity = Math.random() * 0.5 + 0.3;
+            // Random pink/red colors
+            const colors = ['#FF6B6B', '#FF8787', '#FA5252', '#E03131'];
+            const color = colors[Math.floor(Math.random() * colors.length)];
+            heart.style.background = color;
+
+            // For pseudo elements, we need a custom property or just simple inline style won't work easily for ::before/::after
+            // So let's just stick to one color for simplicity or use CSS variables if needed.
+            // Actually, setting style.background works on the main square.
+            // We need to set it on before/after too for consistency if we want multicolor.
+            // simpler approach: just let them be default pink defined in CSS for now to handle ::before/::after nicely,
+            // or just use an SVG/emoji. Let's use emoji for simplicity?
+            // No, CSS shape is smoother. sticking to CSS shape defined in style.css.
+
+            document.body.appendChild(heart);
+
+            setTimeout(() => {
+                heart.remove();
+            }, 5000);
+        }
+
+        // Start hearts after intro
+        setTimeout(() => {
+            setInterval(createHeart, 300);
+        }, 3500);
 
         window.toggleCart = toggleCart; // Expose to window
         window.toggleTheme = toggleTheme;

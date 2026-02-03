@@ -51,7 +51,7 @@ function renderProducts() {
 
     productGrid.innerHTML = products.map(product => `
         <div class="product-card">
-            <img src="${product.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${product.name}" class="product-image">
+            <img src="${(product.imageUrl && product.imageUrl.includes('/upload/') && !product.imageUrl.includes('f_auto,q_auto')) ? product.imageUrl.replace('/upload/', '/upload/f_auto,q_auto/') : (product.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image')}" alt="${product.name}" class="product-image" loading="lazy">
             <div class="product-info">
                 <h3>${product.name}</h3>
                 <p>${product.description || 'No description available.'}</p>
@@ -86,7 +86,7 @@ window.searchProducts = () => {
 function renderFiltered(list) {
     productGrid.innerHTML = list.map(product => `
         <div class="product-card">
-            <img src="${product.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image'}" alt="${product.name}" class="product-image">
+            <img src="${(product.imageUrl && product.imageUrl.includes('/upload/') && !product.imageUrl.includes('f_auto,q_auto')) ? product.imageUrl.replace('/upload/', '/upload/f_auto,q_auto/') : (product.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image')}" alt="${product.name}" class="product-image" loading="lazy">
             <div class="product-info">
                 <h3>${product.name}</h3>
                 <p>${product.description || 'No description available.'}</p>

@@ -580,13 +580,44 @@ body.dark-mode .intro-logo {
     }
 }
 
-/* Admin Layout - Desktop First */
-.admin-layout {
-    display: grid;
-    grid-template-columns: 1fr 2fr;
-    gap: 40px;
-    align-items: start;
-    /* Prevents form from stretching */
+/* Valentine's Heart Animation */
+.heart {
+    position: fixed;
+    top: -10vh;
+    transform: translateY(0);
+    width: 20px;
+    height: 20px;
+    background: #FF6B6B;
+    transform: rotate(45deg);
+    opacity: 0.7;
+    z-index: 9998;
+    /* Below intro overlay but above content */
+    animation: fall linear forwards;
+    pointer-events: none;
+}
+
+.heart::before,
+.heart::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    background: #FF6B6B;
+    border-radius: 50%;
+}
+
+.heart::before {
+    left: -10px;
+}
+
+.heart::after {
+    top: -10px;
+}
+
+@keyframes fall {
+    to {
+        transform: translateY(110vh) rotate(45deg);
+    }
 }
 
 .admin-form-container {

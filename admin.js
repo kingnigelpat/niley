@@ -136,10 +136,17 @@ document.getElementById("uploadBtn").onclick = function () {
             },
             (error, result) => {
                 if (!error && result && result.event === "success") {
-                    productMedia = result.info.secure_url;
+                    // OPTIMIZATION: Use Cloudinary's auto format and quality
+                    // This replaces 'upload/' with 'upload/f_auto,q_auto/' in the URL
+                    let optimizedUrl = result.info.secure_url;
+                    if (optimizedUrl.includes("/upload/")) {
+                        optimizedUrl = optimizedUrl.replace("/upload/", "/upload/f_auto,q_auto/");
+                    }
+
+                    productMedia = optimizedUrl;
                     document.getElementById("preview").src = productMedia;
                     document.getElementById("preview").style.display = "block";
-                    console.log("Uploaded:", productMedia);
+                    console.log("Uploaded Optimized:", productMedia);
                 } else if (error) {
                     console.error("Cloudinary Error:", error);
                     alert("Upload Error: " + error.message);
