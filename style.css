@@ -454,7 +454,7 @@ body.dark-mode .form-group input:focus {
     padding: 16px;
     background: var(--text-color);
     /* Black button for checkout */
-    color: white;
+    color: var(--bg-color);
     border-radius: 4px;
     margin-top: 15px;
     font-size: 1rem;
@@ -493,7 +493,7 @@ body.dark-mode .form-group input:focus {
     min-width: 320px;
     background-color: var(--text-color);
     /* Darker, premium */
-    color: #fff;
+    color: var(--bg-color);
     text-align: center;
     border-radius: 50px;
     /* Pill shape */

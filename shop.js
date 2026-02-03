@@ -114,7 +114,7 @@ window.addToCart = (id) => {
     updateCartUI();
     saveCart();
     // Animation/Feedback
-    alert(`${product.name} added to cart!`);
+    showToast(`${product.name} added to cart!`);
 };
 
 function removeFromCart(id) {
