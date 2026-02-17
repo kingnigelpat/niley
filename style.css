@@ -1152,6 +1152,32 @@ body.dark-mode .skeleton-btn {
         background: var(--image-bg);
     }
 
+    /* Featured Scroll - Mobile Polish */
+    .featured-scroll {
+        margin-left: -20px;
+        /* Pull out to edge */
+        width: calc(100% + 40px);
+        /* Full width */
+        padding: 0 20px 20px;
+        /* Add internal padding */
+    }
+
+    .featured-card {
+        min-width: 110px;
+        /* Slightly smaller */
+        height: 110px;
+    }
+
+    .section-title {
+        font-size: 1.3rem;
+        margin-bottom: 15px;
+    }
+
+    /* Skeleton - Mobile */
+    .skeleton-img {
+        height: 180px;
+    }
+
     .admin-header {
         margin-bottom: 30px;
         text-align: center;
