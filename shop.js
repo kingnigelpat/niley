@@ -2,7 +2,8 @@ import { db } from './firebase-config.js';
 import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
 // CONFIGURATION
-const IG_USERNAME = "niely_2423"; // e.g. "techstore_official"
+const IG_USERNAME = "niely_2423";
+const WHATSAPP_NUMBER = "1234567890"; // REPLACE WITH YOUR REAL NUMBER
 
 // STATE
 let cart = [];
@@ -49,11 +50,14 @@ async function fetchProducts() {
 function renderProducts() {
     if (products.length === 0) return;
 
-    productGrid.innerHTML = products.map(product => `
-        <div class="product-card">
-            <img src="${(product.imageUrl && product.imageUrl.includes('/upload/') && !product.imageUrl.includes('f_auto,q_auto')) ? product.imageUrl.replace('/upload/', '/upload/f_auto,q_auto/') : (product.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image')}" alt="${product.name}" class="product-image" loading="lazy">
+    productGrid.innerHTML = products.map((product, index) => `
+        <div class="product-card" style="animation-delay: ${index * 0.1}s">
+            <div class="product-image-container" onclick="openQuickView('${product.id}')" style="cursor: pointer;">
+                ${index < 2 ? '<div class="product-tag">New Arrival</div>' : ''}
+                <img src="${(product.imageUrl && product.imageUrl.includes('/upload/') && !product.imageUrl.includes('f_auto,q_auto')) ? product.imageUrl.replace('/upload/', '/upload/f_auto,q_auto/') : (product.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image')}" alt="${product.name}" class="product-image" loading="lazy">
+            </div>
             <div class="product-info">
-                <h3>${product.name}</h3>
+                <h3 onclick="openQuickView('${product.id}')" style="cursor: pointer;">${product.name}</h3>
                 <p>${product.description || 'No description available.'}</p>
                 <span class="price">$${parseFloat(product.price).toFixed(2)}</span>
                 <button class="add-to-cart-btn" onclick="addToCart('${product.id}')">
@@ -180,37 +184,90 @@ window.checkout = async () => {
 
     cart.forEach(item => {
         const itemTotal = parseFloat(item.price) * item.quantity;
-        messageLine += `📦 ${item.name} (x${item.quantity}) - $${itemTotal.toFixed(2)}\n`;
-        total += itemTotal;
+        cartItemsText += `📦 ${item.name} (x${item.quantity}) - $${itemTotal.toFixed(2)}%0A`; // %0A for new line in URL
+        cartTotal += itemTotal;
     });
 
-    messageLine += `\n💰 *Total Order Value: $${total.toFixed(2)}*`;
-    messageLine += "\n\n📍 Please let me know how to proceed with payment and shipping.";
+    // 2. Build WhatsApp Message
+    const text = `Hi Niley! I'd like to place an order:%0A%0A${cartItemsText}%0A%0ATotal: $${cartTotal.toFixed(2)}%0A%0APlease confirm availability.`;
+    const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`; // Replace with real number
 
-    // 2. Copy to Clipboard with Visual Feedback
-    try {
-        await navigator.clipboard.writeText(messageLine);
-        showToast("✅ Order copied! Paste it in my Instagram chat — opening Instagram now…");
-    } catch (err) {
-        console.log("Clipboard not available");
-        showToast("⚠️ Copy failed. Please select & copy text manually.");
+    // 3. Open WhatsApp
+    window.open(waLink, '_blank');
+    showToast("Opening WhatsApp with your order details!");
+};
+
+// 4. Filter Logic for New Arrivals/Categories
+// 4. Filter Logic for Categories
+window.filterCategory = (category) => {
+    const section = document.getElementById('product-grid');
+    section.scrollIntoView({ behavior: 'smooth' });
+
+    let filtered = products;
+
+    if (category === 'Trending') {
+        // Show first 3 products as "Trending"
+        filtered = products.slice(0, 3);
+    } else if (category === 'Gadgets') {
+        filtered = products.filter(p =>
+            /phone|watch|laptop|tablet|gadget/i.test(p.name)
+        );
+    } else if (category === 'Audio') {
+        filtered = products.filter(p =>
+            /audio|headphone|speaker|earbud|sound/i.test(p.name)
+        );
+    } else if (category === 'Smart Home') {
+        filtered = products.filter(p =>
+            /smart|home|light|bulb|alexa|google/i.test(p.name)
+        );
     }
 
-    // 3. Smart Redirect Logic
-    // Detect Mobile Device
-    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+    if (filtered.length === 0) {
+        showToast(`No ${category} products found.`);
+        renderProducts(products); // Show all if none found
+    } else {
+        renderProducts(filtered);
+        showToast(`Showing ${category}`);
+    }
+};
 
-    setTimeout(() => {
-        if (isMobile) {
-            // On mobile, window.location.href is more reliable for triggering 
-            // the 'Open in App' system dialog or deep link.
-            window.location.href = `https://ig.me/m/${IG_USERNAME}`;
-        } else {
-            // On Desktop, open in a new tab so they don't lose the store page.
-            // We use the web direct link which works well on desktop.
-            window.open(`https://ig.me/m/${IG_USERNAME}`, '_blank');
-        }
-    }, 2000);
+// QUICK VIEW MODAL LOGIC
+window.openQuickView = (id) => {
+    const product = products.find(p => p.id === id);
+    if (!product) return;
+
+    // Populate Modal Data
+    const imgUrl = (product.imageUrl && product.imageUrl.includes('/upload/') && !product.imageUrl.includes('f_auto,q_auto'))
+        ? product.imageUrl.replace('/upload/', '/upload/f_auto,q_auto/')
+        : (product.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image');
+
+    const qvImage = document.getElementById('qv-image');
+    if (qvImage) qvImage.src = imgUrl;
+
+    document.getElementById('qv-title').innerText = product.name;
+    document.getElementById('qv-price').innerText = `$${parseFloat(product.price).toFixed(2)}`;
+    document.getElementById('qv-description').innerText = product.description || 'No detailed description available.';
+
+    // Set Add to Cart Button action within modal
+    const qvBtn = document.getElementById('qv-btn');
+    // Remove old listeners by cloning
+    const newBtn = qvBtn.cloneNode(true);
+    qvBtn.parentNode.replaceChild(newBtn, qvBtn);
+
+    newBtn.onclick = () => {
+        addToCart(product.id);
+        closeQuickView();
+    };
+
+    // Show Modal
+    document.getElementById('quick-view-modal').classList.add('open');
+};
+
+window.closeQuickView = (e) => {
+    // If e is present, check target. If simply called(), just close.
+    if (e && e.target !== e.currentTarget && !e.target.classList.contains('close-modal')) return;
+
+    document.getElementById('quick-view-modal').classList.remove('open');
 };
 
 // Run Init

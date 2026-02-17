@@ -35,25 +35,61 @@
         </div>
     </nav>
 
-    <header class="container">
-        <h1>Smart Tech. Smarter Living</h1>
-        <p
-            style="color: #FF6B6B; font-family: var(--font-heading); font-style: italic; font-size: 1.3rem; margin-bottom: 5px;">
-            <i class="fas fa-heart" style="color: #FF6B6B; margin-right: 5px;"></i>It's the season of love <i class="fas fa-heart" style="color: #FF6B6B; margin-right: 5px;"></i>
-        </p>
-        <p>Elevate your lifestyle with our premium selection of cutting edge appliances.</p>
+    <header class="hero-section">
+        <div class="hero-content container">
+            <h1>Smart Tech. Smarter Living</h1>
+            <p>Elevate your lifestyle with our premium selection of cutting edge appliances.</p>
 
-        <div class="search-container">
-            <input type="text" id="search-input" placeholder="Search for products..." onkeyup="searchProducts()">
-            <i class="fas fa-search search-icon"></i>
+            <div class="search-container">
+                <input type="text" id="search-input" placeholder="Search for products..." onkeyup="searchProducts()">
+                <i class="fas fa-search search-icon"></i>
+            </div>
         </div>
+        <div class="hero-overlay"></div>
     </header>
 
     <main class="container">
+        <!-- New Featured Section -->
+        <h3 class="section-title">New Arrivals</h3>
+        <div class="featured-scroll">
+            <div class="featured-card" onclick="filterCategory('Trending')">
+                <i class="fas fa-fire"></i>
+                <span>Trending</span>
+            </div>
+            <div class="featured-card" onclick="filterCategory('Gadgets')">
+                <i class="fas fa-mobile-alt"></i>
+                <span>Gadgets</span>
+            </div>
+            <div class="featured-card" onclick="filterCategory('Audio')">
+                <i class="fas fa-headphones"></i>
+                <span>Audio</span>
+            </div>
+            <div class="featured-card" onclick="filterCategory('Smart Home')">
+                <i class="fas fa-home"></i>
+                <span>Smart Home</span>
+            </div>
+        </div>
+
+        <h3 class="section-title">All Products</h3>
         <div id="product-grid" class="product-grid">
-            <!-- Products will be injected here via JS -->
-            <div style="grid-column: 1/-1; text-align: center; padding: 50px;">
-                <p style="color: var(--text-light);">Loading Collection...</p>
+            <!-- Skeleton Loader -->
+            <div class="product-card skeleton-card">
+                <div class="skeleton-img"></div>
+                <div class="skeleton-text"></div>
+                <div class="skeleton-text short"></div>
+                <div class="skeleton-btn"></div>
+            </div>
+            <div class="product-card skeleton-card">
+                <div class="skeleton-img"></div>
+                <div class="skeleton-text"></div>
+                <div class="skeleton-text short"></div>
+                <div class="skeleton-btn"></div>
+            </div>
+            <div class="product-card skeleton-card">
+                <div class="skeleton-img"></div>
+                <div class="skeleton-text"></div>
+                <div class="skeleton-text short"></div>
+                <div class="skeleton-btn"></div>
             </div>
         </div>
     </main>
@@ -77,6 +113,67 @@
             </button>
         </div>
     </div>
+
+    <!-- Quick View Modal -->
+    <div id="quick-view-modal" class="modal-overlay" onclick="closeQuickView(event)">
+        <div class="modal-content">
+            <button class="close-modal" onclick="closeQuickView()">&times;</button>
+            <div class="quick-view-grid">
+                <div class="quick-view-image-container">
+                    <img id="qv-image" src="" alt="Product">
+                </div>
+                <div class="quick-view-details">
+                    <h2 id="qv-title">Product Name</h2>
+                    <p id="qv-price" class="qv-price">$0.00</p>
+                    <p id="qv-description">Description goes here...</p>
+                    <button class="add-to-cart-btn" id="qv-btn">Add to Cart</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <!-- Instagram Shop Footer -->
+    <footer class="footer instagram-footer">
+        <div class="container footer-grid-ig">
+            <div class="footer-brand">
+                <img src="WhatsApp Image 2026-01-25 at 11.40.29.jpeg" alt="Niley"
+                    style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); padding: 3px; margin-bottom: 25px;">
+                <p>Curated tech essentials for your modern lifestyle. DM to order.</p>
+                <div class="social-links-large">
+                    <a href="https://instagram.com/niely_2423" target="_blank" class="ig-btn">
+                        <i class="fab fa-instagram"></i> Follow us
+                    </a>
+                </div>
+            </div>
+
+            <div class="footer-trust">
+                <div class="trust-item">
+                    <i class="fas fa-truck-fast"></i>
+                    <span>Fast Delivery</span>
+                </div>
+                <div class="trust-item">
+                    <i class="fas fa-shield-alt"></i>
+                    <span>Secure Payments</span>
+                </div>
+                <div class="trust-item">
+                    <i class="fas fa-comments"></i>
+                    <span>24/7 Support via DM</span>
+                </div>
+            </div>
+
+            <div class="footer-actions">
+                <h3>Have Questions?</h3>
+                <p>We are active on Instagram.</p>
+                <a href="https://ig.me/m/niely_2423" target="_blank" class="footer-cta-btn">
+                    <i class="fab fa-instagram"></i> DM Us Now
+                </a>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Niley. Built for the modern shopper.</p>
+        </div>
+    </footer>
 
     <!-- Toast Notification -->
     <div id="toast" class="toast">Message Copied!</div>
@@ -122,38 +219,6 @@
                 overlay.classList.add('fade-out');
             }, 3500); // 3.5 seconds
         });
-
-        // Valentine's Animation
-        function createHeart() {
-            const heart = document.createElement('div');
-            heart.classList.add('heart');
-            heart.style.left = Math.random() * 100 + "vw";
-            heart.style.animationDuration = Math.random() * 2 + 3 + "s"; // 3-5s
-            heart.style.opacity = Math.random() * 0.5 + 0.3;
-            // Random pink/red colors
-            const colors = ['#FF6B6B', '#FF8787', '#FA5252', '#E03131'];
-            const color = colors[Math.floor(Math.random() * colors.length)];
-            heart.style.background = color;
-
-            // For pseudo elements, we need a custom property or just simple inline style won't work easily for ::before/::after
-            // So let's just stick to one color for simplicity or use CSS variables if needed.
-            // Actually, setting style.background works on the main square.
-            // We need to set it on before/after too for consistency if we want multicolor.
-            // simpler approach: just let them be default pink defined in CSS for now to handle ::before/::after nicely,
-            // or just use an SVG/emoji. Let's use emoji for simplicity?
-            // No, CSS shape is smoother. sticking to CSS shape defined in style.css.
-
-            document.body.appendChild(heart);
-
-            setTimeout(() => {
-                heart.remove();
-            }, 5000);
-        }
-
-        // Start hearts after intro
-        setTimeout(() => {
-            setInterval(createHeart, 300);
-        }, 3500);
 
         window.toggleCart = toggleCart; // Expose to window
         window.toggleTheme = toggleTheme;

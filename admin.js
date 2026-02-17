@@ -268,20 +268,16 @@ async function loadProducts() {
             currentProducts.push(data);
 
             const item = document.createElement('div');
-            item.className = 'product-card';
-            item.style.marginBottom = '20px';
-            item.style.display = 'flex';
-            item.style.gap = '20px';
-            item.style.alignItems = 'center';
+            item.className = 'admin-product-item';
 
             item.innerHTML = `
-                <img src="${data.imageUrl}" style="width: 80px; height: 80px; object-fit: cover; border-radius: 5px;">
-                <div style="flex-grow: 1;">
+                <img src="${data.imageUrl}" class="admin-item-img">
+                <div class="admin-item-info">
                     <h4>${data.name}</h4>
-                    <p>$${data.price}</p>
+                    <p class="price">$${data.price}</p>
                 </div>
-                <div style="display:flex; flex-direction:column; gap: 5px;">
-                    <button class="nav-btn" onclick="editProduct('${data.id}')" style="font-size: 0.8rem; border: 1px solid var(--accent-color); border-radius: 4px; padding: 5px;">
+                <div class="admin-item-actions">
+                    <button class="edit-btn" onclick="editProduct('${data.id}')">
                         Edit
                     </button>
                     <button class="delete-btn" onclick="deleteProduct('${data.id}')">

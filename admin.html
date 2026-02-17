@@ -17,7 +17,7 @@
             <span class="logo-text">Niley Admin</span>
         </a>
         <div class="nav-links">
-            <button class="nav-btn" onclick="toggleTheme()" style="margin-right: 15px;">
+            <button class="nav-btn" onclick="toggleTheme()" style="display: none;">
                 <i id="theme-icon" class="fas fa-moon"></i>
             </button>
             <a href="./" class="nav-btn">Back to Store</a>
@@ -46,12 +46,10 @@
         }
 
         // Init theme
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            document.body.classList.add('dark-mode');
-            updateThemeIcon(true);
-        }
-        window.toggleTheme = toggleTheme;
+        // Admin Panel Force Dark Mode
+        document.body.classList.add('dark-mode');
+        // Disable toggle for admin to maintain premium look
+        window.toggleTheme = () => { console.log('Admin theme is locked to Premium Dark'); };
     </script>
 
     <!-- Login View -->
@@ -74,11 +72,14 @@
     <!-- Dashboard View -->
     <div id="dashboard-view" class="container" style="display: none;">
         <div class="admin-header">
-            <h2>Inventory Dashboard</h2>
-            <button class="nav-btn" onclick="clearForm()">
-                <i class="fas fa-plus"></i> New Product
-            </button>
+            <div>
+                <h2 style="font-size: 2.5rem; margin-bottom: 5px;">Dashboard</h2>
+                <p style="color: var(--text-light); font-size: 1.1rem;">Ready to inspire the world with new products?
+                </p>
+            </div>
         </div>
+
+
 
         <div class="admin-layout">
             <!-- Editor Form -->
