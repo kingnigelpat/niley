@@ -255,7 +255,12 @@ async function loadProducts() {
     try {
         const querySnapshot = await getDocs(collection(db, "products"));
 
+        // Update Stats
+        const totalCountEl = document.getElementById('total-count');
+        if (totalCountEl) totalCountEl.innerText = querySnapshot.size;
+
         if (querySnapshot.empty) {
+
             productList.innerHTML = '<p>No products yet.</p>';
             return;
         }

@@ -49,28 +49,38 @@
     </header>
 
     <main class="container">
-        <!-- New Featured Section -->
-        <h3 class="section-title">New Arrivals</h3>
+        <div class="section-header">
+            <h3 class="section-title">Explore Categories</h3>
+            <p>Find the perfect appliance for your space.</p>
+        </div>
         <div class="featured-scroll">
-            <div class="featured-card" onclick="filterCategory('Trending')">
+            <div class="featured-card active" onclick="filterCategory('All', this)">
+                <i class="fas fa-th-large"></i>
+                <span>All</span>
+            </div>
+            <div class="featured-card" onclick="filterCategory('Trending', this)">
                 <i class="fas fa-fire"></i>
                 <span>Trending</span>
             </div>
-            <div class="featured-card" onclick="filterCategory('Gadgets')">
+            <div class="featured-card" onclick="filterCategory('Gadgets', this)">
                 <i class="fas fa-mobile-alt"></i>
                 <span>Gadgets</span>
             </div>
-            <div class="featured-card" onclick="filterCategory('Audio')">
+            <div class="featured-card" onclick="filterCategory('Audio', this)">
                 <i class="fas fa-headphones"></i>
                 <span>Audio</span>
             </div>
-            <div class="featured-card" onclick="filterCategory('Smart Home')">
+            <div class="featured-card" onclick="filterCategory('Smart Home', this)">
                 <i class="fas fa-home"></i>
                 <span>Smart Home</span>
             </div>
         </div>
 
-        <h3 class="section-title">All Products</h3>
+
+        <div class="section-header">
+            <h3 class="section-title">Our Collection</h3>
+        </div>
+
         <div id="product-grid" class="product-grid">
             <!-- Skeleton Loader -->
             <div class="product-card skeleton-card">
@@ -212,13 +222,26 @@
             updateThemeIcon(true);
         }
 
+        // Navbar scroll effect
+        window.addEventListener('scroll', () => {
+            const nav = document.querySelector('nav');
+            if (window.scrollY > 50) {
+                nav.classList.add('scrolled');
+            } else {
+                nav.classList.remove('scrolled');
+            }
+        });
+
         // Intro Animation
         window.addEventListener('load', () => {
             const overlay = document.getElementById('intro-overlay');
-            setTimeout(() => {
-                overlay.classList.add('fade-out');
-            }, 3500); // 3.5 seconds
+            if (overlay) {
+                setTimeout(() => {
+                    overlay.classList.add('fade-out');
+                }, 3000); // 3 seconds
+            }
         });
+
 
         window.toggleCart = toggleCart; // Expose to window
         window.toggleTheme = toggleTheme;
