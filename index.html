@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NILEY | Future of Tech Appliances</title>
+    <title>NILEY | Curated Lifestyle Artifacts</title>
     <meta name="description"
-        content="Niley is a premium e-commerce platform for cutting-edge tech appliances. Shop the future today.">
+        content="Niley is a boutique gallery of curated lifestyle artifacts. Available exclusively on Instagram.">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 
@@ -29,6 +29,9 @@
                 <span class="logo-text">Niley</span>
             </a>
             <div class="nav-actions">
+                <button class="icon-btn" onclick="toggleTheme()" id="theme-toggle" title="Switch Theme">
+                    <i class="fas fa-moon"></i>
+                </button>
                 <button class="icon-btn" onclick="toggleSearch()">
                     <i class="fas fa-search"></i>
                 </button>
@@ -41,20 +44,16 @@
     </nav>
 
     <!-- Hero Section -->
-    <section class="hero">
-        <div class="hero-bg"></div>
-        <div class="container hero-content">
-            <h1 data-aos>The Future <br><span class="text-gradient">Is Here.</span></h1>
-            <p data-aos>Curated collection of high-performance tech appliances designed for the modern architectural
-                lifestyle.</p>
-            <div class="cta-group" data-aos>
-                <button class="btn-primary" onclick="document.getElementById('collection').scrollIntoView()">Explore
-                    Collection</button>
-                <button class="btn-outline" onclick="window.open('https://instagram.com/niely_2423', '_blank')">Follow
-                    @niely_2423</button>
+    <header class="hero">
+        <div class="container hero-container">
+            <h1 class="text-gradient" data-aos>Refined Living.</h1>
+            <p data-aos style="transition-delay: 0.2s">Elegance in the essentials. Curated with care for your
+                collection.</p>
+            <div class="hero-btns" data-aos style="transition-delay: 0.4s">
+                <a href="#collection" class="btn-primary">Explore Collection</a>
             </div>
         </div>
-    </section>
+    </header>
 
     <!-- Main Content -->
     <main class="container">
@@ -154,16 +153,15 @@
                         <img src="niley-logo-removebg-preview.png" alt="Niley" style="height: 40px;">
                         <span class="logo-text">Niley</span>
                     </div>
-                    <p>Exceptional technology curated exclusively for Instagram shoppers. We believe in quality over
-                        quantity.</p>
+                    <p>Elegance in the essentials. Curated for those who appreciate the finer details in life.</p>
                 </div>
                 <div class="footer-links">
                     <h4>Direct Access</h4>
                     <div class="social-links">
-                        <a href="https://instagram.com/niely_2423" target="_blank" class="btn-outline">
+                        <a href="https://www.instagram.com/niely_2423/" target="_blank" class="btn-outline">
                             <i class="fab fa-instagram"></i> Follow @niely_2423
                         </a>
-                        <a href="https://ig.me/m/niely_2423" target="_blank" class="btn-outline">
+                        <a href="https://www.instagram.com/niely_2423/direct/" target="_blank" class="btn-outline">
                             <i class="fas fa-comment"></i> DM Us to Order
                         </a>
                     </div>

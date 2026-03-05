@@ -198,29 +198,62 @@ window.closeQuickView = () => {
     if (modal) modal.classList.remove('active');
 };
 
-// CHECKOUT (Instagram DM Approach - EXCLUSIVE)
-window.checkout = () => {
+// THEME TOGGLE
+window.toggleTheme = () => {
+    const body = document.documentElement;
+    const currentTheme = body.getAttribute('data-theme') || 'dark';
+    const nextTheme = currentTheme === 'dark' ? 'light' : 'dark';
+
+    body.setAttribute('data-theme', nextTheme);
+    localStorage.setItem('niley-theme', nextTheme);
+
+    // Update Icon
+    const themeIcon = document.querySelector('#theme-toggle i');
+    if (themeIcon) {
+        themeIcon.className = nextTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+    }
+
+    showToast(`Switched to ${nextTheme} mode`);
+};
+
+// CHECKOUT (Optimized for Instagram Bio Link)
+window.checkout = async () => {
     if (cart.length === 0) {
         showToast("Bag is empty");
         return;
     }
 
-    let message = "Hi NILEY! I'm interested in placing an order:%0A%0A";
+    let message = "Hi NILEY! I'd like to order these artifacts:\n\n";
     let total = 0;
 
     cart.forEach(item => {
         const priceToUse = item.discountPrice && item.discountPrice < item.price ? item.discountPrice : item.price;
         const itemTotal = parseFloat(priceToUse) * item.quantity;
-        message += `• ${item.name} (${item.quantity}x) - $${itemTotal.toLocaleString()}%0A`;
+        message += `• ${item.name} (${item.quantity}x) - $${itemTotal.toLocaleString()}\n`;
         total += itemTotal;
     });
 
-    message += `%0A*Total: $${total.toLocaleString()}*%0A%0AI found these artifacts on your site. Are they available?`;
+    message += `\nTotal: $${total.toLocaleString()}\n\nAre these currently in the vault?`;
 
-    const igLink = `https://ig.me/m/niely_2423?text=${message}`;
-    window.open(igLink, '_blank');
+    try {
+        // COPY TO CLIPBOARD - Best for Instagram Bio Link
+        await navigator.clipboard.writeText(message);
 
-    showToast("Redirecting to Instagram DM...");
+        // VISUAL FEEDBACK
+        showToast("✓ Order Details Copied! Redirecting to DMs. Just PASTE it there.");
+
+        // Wait a small moment so they see the toast
+        setTimeout(() => {
+            // Direct link to the profile/inbox
+            window.open('https://www.instagram.com/niely_2423/', '_blank');
+        }, 2500);
+
+    } catch (err) {
+        console.error('Failed to copy: ', err);
+        // Fallback for browsers that block clipboard (rare but possible in some webviews)
+        const igLink = `https://www.instagram.com/niely_2423/`;
+        window.open(igLink, '_blank');
+    }
 };
 
 // FILTER CATEGORIES
@@ -305,9 +338,16 @@ function showToast(message) {
     setTimeout(() => toast.classList.remove('active'), 3000);
 }
 
-// EVENTS
+// INITIAL LOAD WRAPPER
 document.addEventListener('DOMContentLoaded', () => {
+    // Restore Theme
+    const savedTheme = localStorage.getItem('niley-theme') || 'dark';
+    document.documentElement.setAttribute('data-theme', savedTheme);
+    const themeIcon = document.querySelector('#theme-toggle i');
+    if (themeIcon) themeIcon.className = savedTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+
     initShop();
+
     const searchInput = document.getElementById('search-input');
     if (searchInput) {
         searchInput.addEventListener('keypress', (e) => {
