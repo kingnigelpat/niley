@@ -244,9 +244,20 @@ window.checkout = async () => {
 
         // Wait a small moment so they see the toast
         setTimeout(() => {
-            // Direct link to the profile/inbox
-            window.open('https://www.instagram.com/niely_2423/', '_blank');
-        }, 2500);
+            // DEEP LINK - Forces the Instagram App to open if installed
+            const appLink = 'instagram://user?username=niely_2423';
+            const webLink = 'https://www.instagram.com/niely_2423/';
+
+            // Try app link first, then fallback to web
+            window.location.href = appLink;
+
+            // Fallback for desktop or users without the app
+            setTimeout(() => {
+                if (document.hasFocus()) {
+                    window.open(webLink, '_blank');
+                }
+            }, 500);
+        }, 2000);
 
     } catch (err) {
         console.error('Failed to copy: ', err);
