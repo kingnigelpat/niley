@@ -84,6 +84,11 @@ window.renderProducts = (list) => {
             </div>
         `;
     }).join('');
+
+    // Trigger visibility update immediately
+    setTimeout(() => {
+        if (window.checkScroll) window.checkScroll();
+    }, 100);
 };
 
 // CART LOGIC
