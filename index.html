@@ -4,247 +4,229 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Niley | Tech Appliances</title>
+    <title>NILEY | Future of Tech Appliances</title>
+    <meta name="description"
+        content="Niley is a premium e-commerce platform for cutting-edge tech appliances. Shop the future today.">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+    <!-- Firebase is now handled inside shop.js module -->
+    <script type="module" src="shop.js"></script>
 </head>
 
 <body>
-    <!-- Intro Overlay -->
-    <div id="intro-overlay" class="intro-overlay">
-        <div class="intro-content">
-            <img src="niley-logo-removebg-preview.png" alt="Niley Logo" class="intro-logo">
-            <h1 class="intro-text">Welcome to Niley</h1>
-            <p class="intro-subtext">Premium Ecommerce Shop for Tech Appliances</p>
-        </div>
+    <!-- Intro Transition -->
+    <div id="intro-screen" class="intro-screen">
+        <img src="niley-logo-removebg-preview.png" alt="Niley" class="intro-logo">
+        <div class="logo-text">Niley</div>
     </div>
 
-    <nav>
-        <a href="#" class="logo-container">
-            <img src="niley-logo-removebg-preview.png" alt="Niley Logo" class="logo-img">
-            <!-- <span class="logo-text">Niley</span> Optional: Remove text if logo has it -->
-        </a>
-        <div class="nav-links">
-            <button class="nav-btn" onclick="toggleTheme()" style="margin-right: 15px;">
-                <i id="theme-icon" class="fas fa-moon"></i>
-            </button>
-            <button class="nav-btn" onclick="toggleCart()">
-                <i class="fas fa-shopping-cart" style="margin-right: 5px;"></i> Cart
-                <span id="cart-count" class="badge">0</span>
-            </button>
+    <!-- Navigation -->
+    <nav id="main-nav">
+        <div class="container nav-container">
+            <a href="#" class="logo-container">
+                <img src="niley-logo-removebg-preview.png" alt="Niley Logo" class="logo-img">
+                <span class="logo-text">Niley</span>
+            </a>
+            <div class="nav-actions">
+                <button class="icon-btn" onclick="toggleSearch()">
+                    <i class="fas fa-search"></i>
+                </button>
+                <button class="icon-btn" onclick="toggleCart()">
+                    <i class="fas fa-shopping-bag"></i>
+                    <span id="cart-count" class="badge">0</span>
+                </button>
+            </div>
         </div>
     </nav>
 
-    <header class="hero-section">
-        <div class="hero-content container">
-            <h1>Smart Tech. Smarter Living</h1>
-            <p>Elevate your lifestyle with our premium selection of cutting edge appliances.</p>
-
-            <div class="search-container">
-                <input type="text" id="search-input" placeholder="Search for products..." onkeyup="searchProducts()">
-                <i class="fas fa-search search-icon"></i>
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-bg"></div>
+        <div class="container hero-content">
+            <h1 data-aos>The Future <br><span class="text-gradient">Is Here.</span></h1>
+            <p data-aos>Curated collection of high-performance tech appliances designed for the modern architectural
+                lifestyle.</p>
+            <div class="cta-group" data-aos>
+                <button class="btn-primary" onclick="document.getElementById('collection').scrollIntoView()">Explore
+                    Collection</button>
+                <button class="btn-outline" onclick="window.open('https://instagram.com/niely_2423', '_blank')">Follow
+                    @niely_2423</button>
             </div>
         </div>
-        <div class="hero-overlay"></div>
-    </header>
+    </section>
 
+    <!-- Main Content -->
     <main class="container">
-        <div class="section-header">
-            <h3 class="section-title">Explore Categories</h3>
-            <p>Find the perfect appliance for your space.</p>
-        </div>
-        <div class="featured-scroll">
-            <div class="featured-card active" onclick="filterCategory('All', this)">
-                <i class="fas fa-th-large"></i>
-                <span>All</span>
-            </div>
-            <div class="featured-card" onclick="filterCategory('Trending', this)">
-                <i class="fas fa-fire"></i>
-                <span>Trending</span>
-            </div>
-            <div class="featured-card" onclick="filterCategory('Gadgets', this)">
-                <i class="fas fa-mobile-alt"></i>
-                <span>Gadgets</span>
-            </div>
-            <div class="featured-card" onclick="filterCategory('Audio', this)">
-                <i class="fas fa-headphones"></i>
-                <span>Audio</span>
-            </div>
-            <div class="featured-card" onclick="filterCategory('Smart Home', this)">
-                <i class="fas fa-home"></i>
-                <span>Smart Home</span>
+        <!-- Premium Filter Chips -->
+        <div class="filter-wrapper" data-aos>
+            <div class="filter-chips">
+                <button class="chip active" onclick="filterCategory('All', this)">
+                    <i class="fas fa-layer-group"></i> All
+                </button>
+                <button class="chip" onclick="filterCategory('Trending', this)">
+                    <i class="fas fa-fire"></i> Trending
+                </button>
+                <button class="chip" onclick="filterCategory('Gadgets', this)">
+                    <i class="fas fa-microchip"></i> Gadgets
+                </button>
+                <button class="chip" onclick="filterCategory('Audio', this)">
+                    <i class="fas fa-volume-up"></i> Audio
+                </button>
+                <button class="chip" onclick="filterCategory('Smart Home', this)">
+                    <i class="fas fa-broadcast-tower"></i> Smart Home
+                </button>
             </div>
         </div>
 
+        <!-- Product Collection Area -->
+        <section class="products-area" id="collection">
+            <div class="section-title">
+                <h2 id="current-category-name">The Collection</h2>
+            </div>
 
-        <div class="section-header">
-            <h3 class="section-title">Our Collection</h3>
-        </div>
-
-        <div id="product-grid" class="product-grid">
-            <!-- Skeleton Loader -->
-            <div class="product-card skeleton-card">
-                <div class="skeleton-img"></div>
-                <div class="skeleton-text"></div>
-                <div class="skeleton-text short"></div>
-                <div class="skeleton-btn"></div>
+            <div id="product-grid" class="product-grid">
+                <!-- Products injected here -->
             </div>
-            <div class="product-card skeleton-card">
-                <div class="skeleton-img"></div>
-                <div class="skeleton-text"></div>
-                <div class="skeleton-text short"></div>
-                <div class="skeleton-btn"></div>
-            </div>
-            <div class="product-card skeleton-card">
-                <div class="skeleton-img"></div>
-                <div class="skeleton-text"></div>
-                <div class="skeleton-text short"></div>
-                <div class="skeleton-btn"></div>
-            </div>
-        </div>
+        </section>
     </main>
 
-    <div id="cart-modal" class="cart-modal">
-        <div class="cart-header">
-            <h3>Your Selection</h3>
-            <button class="close-cart" onclick="toggleCart()">&times;</button>
-        </div>
-        <div id="cart-items" class="cart-items">
-            <!-- Cart Items injected here -->
-            <p style="text-align: center; color: var(--text-light); margin-top: 20px;">Your bag is empty.</p>
-        </div>
-        <div class="cart-total-section">
-            <div style="display: flex; justify-content: space-between; margin-bottom: 15px;">
-                <span>Total:</span>
-                <span id="cart-total" style="color: var(--accent-color); font-weight: bold;">$0.00</span>
+    <!-- Search Overlay -->
+    <div id="search-overlay" class="search-overlay">
+        <div class="container">
+            <div style="display: flex; justify-content: space-between; align-items: center;">
+                <h3 class="logo-text">Search</h3>
+                <button class="close-modal" onclick="toggleSearch()" style="position: static;">&times;</button>
             </div>
-            <button class="checkout-btn" onclick="checkout()">
-                <i class="fab fa-instagram"></i> Confirm on IG
-            </button>
+            <input type="text" id="search-input" class="search-field" placeholder="What are you looking for?"
+                onkeyup="searchProducts()">
         </div>
     </div>
 
     <!-- Quick View Modal -->
     <div id="quick-view-modal" class="modal-overlay" onclick="closeQuickView(event)">
-        <div class="modal-content">
+        <div class="modal-content" onclick="event.stopPropagation()">
             <button class="close-modal" onclick="closeQuickView()">&times;</button>
-            <div class="quick-view-grid">
-                <div class="quick-view-image-container">
+            <div class="quickview-grid">
+                <div class="quickview-img-side" id="qv-media-container">
+                    <!-- Image or Video injected here -->
                     <img id="qv-image" src="" alt="Product">
                 </div>
-                <div class="quick-view-details">
-                    <h2 id="qv-title">Product Name</h2>
-                    <p id="qv-price" class="qv-price">$0.00</p>
-                    <p id="qv-description">Description goes here...</p>
-                    <button class="add-to-cart-btn" id="qv-btn">Add to Cart</button>
+                <div class="quickview-info-side">
+                    <h2 id="qv-title">Product Title</h2>
+                    <p id="qv-price" class="quickview-price">$0.00</p>
+                    <p id="qv-description" class="quickview-desc">Product description goes here.</p>
+                    <button class="btn-primary" id="qv-btn" style="width: 100%;">Add to Bag</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Footer -->
-    <!-- Instagram Shop Footer -->
-    <footer class="footer instagram-footer">
-        <div class="container footer-grid-ig">
-            <div class="footer-brand">
-                <img src="WhatsApp Image 2026-01-25 at 11.40.29.jpeg" alt="Niley"
-                    style="width: 100px; height: 100px; object-fit: cover; border-radius: 50%; border: 2px solid rgba(255,255,255,0.2); padding: 3px; margin-bottom: 25px;">
-                <p>Curated tech essentials for your modern lifestyle. DM to order.</p>
-                <div class="social-links-large">
-                    <a href="https://instagram.com/niely_2423" target="_blank" class="ig-btn">
-                        <i class="fab fa-instagram"></i> Follow us
-                    </a>
-                </div>
-            </div>
-
-            <div class="footer-trust">
-                <div class="trust-item">
-                    <i class="fas fa-truck-fast"></i>
-                    <span>Fast Delivery</span>
-                </div>
-                <div class="trust-item">
-                    <i class="fas fa-shield-alt"></i>
-                    <span>Secure Payments</span>
-                </div>
-                <div class="trust-item">
-                    <i class="fas fa-comments"></i>
-                    <span>24/7 Support via DM</span>
-                </div>
-            </div>
-
-            <div class="footer-actions">
-                <h3>Have Questions?</h3>
-                <p>We are active on Instagram.</p>
-                <a href="https://ig.me/m/niely_2423" target="_blank" class="footer-cta-btn">
-                    <i class="fab fa-instagram"></i> DM Us Now
-                </a>
-            </div>
+    <!-- Cart Panel -->
+    <div id="cart-panel" class="cart-panel">
+        <div class="cart-header">
+            <h3>Your Bag</h3>
+            <button class="close-modal" onclick="toggleCart()" style="position: static;">&times;</button>
         </div>
-        <div class="footer-bottom">
-            <p>&copy; 2026 Niley. Built for the modern shopper.</p>
+        <div id="cart-items" class="cart-items">
+            <!-- Items injected here -->
         </div>
-    </footer>
+        <div class="cart-footer">
+            <div class="total-row">
+                <span>Total</span>
+                <span id="cart-total">$0.00</span>
+            </div>
+            <button class="btn-primary" style="width: 100%;" onclick="checkout()">
+                <i class="fab fa-instagram" style="margin-right: 10px;"></i> Order via Instagram
+            </button>
+        </div>
+    </div>
 
     <!-- Toast Notification -->
-    <div id="toast" class="toast">Message Copied!</div>
+    <div id="toast" class="toast">Message</div>
+
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-brand">
+                    <div class="logo-container" style="margin-bottom: 20px;">
+                        <img src="niley-logo-removebg-preview.png" alt="Niley" style="height: 40px;">
+                        <span class="logo-text">Niley</span>
+                    </div>
+                    <p>Exceptional technology curated exclusively for Instagram shoppers. We believe in quality over
+                        quantity.</p>
+                </div>
+                <div class="footer-links">
+                    <h4>Direct Access</h4>
+                    <div class="social-links">
+                        <a href="https://instagram.com/niely_2423" target="_blank" class="btn-outline">
+                            <i class="fab fa-instagram"></i> Follow @niely_2423
+                        </a>
+                        <a href="https://ig.me/m/niely_2423" target="_blank" class="btn-outline">
+                            <i class="fas fa-comment"></i> DM Us to Order
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>&copy; 2026 NILEY. EXCLUSIVELY ON INSTAGRAM.</p>
+            </div>
+        </div>
+    </footer>
 
     <!-- Scripts -->
     <script type="module" src="shop.js"></script>
     <script>
-        // Simple UI toggle script that doesn't depend on modules
+        // UI Helpers
         function toggleCart() {
-            document.getElementById('cart-modal').classList.toggle('open');
+            document.getElementById('cart-panel').classList.toggle('active');
         }
 
-        function toggleTheme() {
-            const body = document.body;
-            body.classList.toggle('dark-mode');
-            const isDark = body.classList.contains('dark-mode');
-            localStorage.setItem('theme', isDark ? 'dark' : 'light');
-            updateThemeIcon(isDark);
-        }
-
-        function updateThemeIcon(isDark) {
-            const icon = document.getElementById('theme-icon');
-            if (isDark) {
-                icon.classList.remove('fa-moon');
-                icon.classList.add('fa-lightbulb');
-            } else {
-                icon.classList.remove('fa-lightbulb');
-                icon.classList.add('fa-moon');
+        function toggleSearch() {
+            const overlay = document.getElementById('search-overlay');
+            overlay.style.display = overlay.style.display === 'block' ? 'none' : 'block';
+            if (overlay.style.display === 'block') {
+                document.getElementById('search-input').focus();
             }
         }
 
-        // Init theme
-        const savedTheme = localStorage.getItem('theme');
-        if (savedTheme === 'dark') {
-            document.body.classList.add('dark-mode');
-            updateThemeIcon(true);
+        function toggleTheme() {
+            // Already dark by default now, keeping for compatibility if needed
+            console.log("Premium mode enabled.");
         }
 
-        // Navbar scroll effect
-        window.addEventListener('scroll', () => {
-            const nav = document.querySelector('nav');
+        // AOS (Animation on Scroll) Simple Implementation
+        function checkScroll() {
+            const elements = document.querySelectorAll('[data-aos]');
+            elements.forEach(el => {
+                const rect = el.getBoundingClientRect();
+                if (rect.top < window.innerHeight * 0.9) {
+                    el.classList.add('is-visible');
+                }
+            });
+
+            // Navbar background on scroll
+            const nav = document.getElementById('main-nav');
             if (window.scrollY > 50) {
                 nav.classList.add('scrolled');
             } else {
                 nav.classList.remove('scrolled');
             }
-        });
+        }
 
-        // Intro Animation
+        window.addEventListener('scroll', checkScroll);
         window.addEventListener('load', () => {
-            const overlay = document.getElementById('intro-overlay');
-            if (overlay) {
-                setTimeout(() => {
-                    overlay.classList.add('fade-out');
-                }, 3000); // 3 seconds
-            }
+            checkScroll();
+            // Intro screen fade out
+            setTimeout(() => {
+                document.getElementById('intro-screen').classList.add('fade-out');
+            }, 1500);
         });
 
-
-        window.toggleCart = toggleCart; // Expose to window
-        window.toggleTheme = toggleTheme;
+        // Global functions
+        window.toggleCart = toggleCart;
+        window.toggleSearch = toggleSearch;
     </script>
 </body>
 

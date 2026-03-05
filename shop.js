@@ -1,90 +1,89 @@
 import { db } from './firebase-config.js';
-import { collection, getDocs } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import {
+    collection,
+    getDocs,
+    query,
+    orderBy
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
 
-// CONFIGURATION
-const IG_USERNAME = "niely_2423";
-const WHATSAPP_NUMBER = "1234567890"; // REPLACE WITH YOUR REAL NUMBER
-
-// STATE
-let cart = [];
-let products = [];
-
-// DOM ELEMENTS
 const productGrid = document.getElementById('product-grid');
-const cartItemsContainer = document.getElementById('cart-items');
-const cartCountSpan = document.getElementById('cart-count');
-const cartTotalSpan = document.getElementById('cart-total');
+let products = [];
+let cart = JSON.parse(localStorage.getItem('niley-cart')) || [];
 
-// INITIALIZATION
-async function init() {
-    await fetchProducts();
-    renderProducts();
-    loadCart();
-}
+// UTILITIES
+const isVideo = (url) => url && (url.includes('.mp4') || url.includes('/video/'));
+const getOptimizedMedia = (url) => {
+    if (!url || isVideo(url)) return url;
+    return url.replace('/upload/', '/upload/f_auto,q_auto/');
+};
 
-// FETCH PRODUCTS
-async function fetchProducts() {
-    // FIRESTORE IMPLEMENTATION
+// INITIAL LOAD
+async function initShop() {
     try {
-        const querySnapshot = await getDocs(collection(db, "products"));
-        products = [];
+        // Fetch ALL products first to ensure 100% visibility
+        const snapshot = await getDocs(collection(db, 'products'));
+        products = snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
 
-        if (querySnapshot.empty) {
-            productGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center;">No products found. Please add products in Admin.</div>`;
-            return;
-        }
-
-        querySnapshot.forEach((doc) => {
-            const data = doc.data();
-            data.id = doc.id; // Include Firestore Doc ID
-            products.push(data);
+        // Sort manually by date if possible, otherwise keep original order
+        products.sort((a, b) => {
+            const dateA = new Date(a.updatedAt || 0);
+            const dateB = new Date(b.updatedAt || 0);
+            return dateB - dateA;
         });
 
+        renderProducts(products);
+        updateCartUI();
     } catch (error) {
-        console.error("Error fetching products:", error);
-        productGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; color: red;">Error loading products.</div>`;
+        console.error("Critical Load Error:", error);
     }
 }
 
 // RENDER PRODUCTS
-function renderProducts(list = products) {
+window.renderProducts = (list) => {
+    if (!productGrid) return;
+
     if (list.length === 0) {
-        productGrid.innerHTML = `<div style="grid-column: 1/-1; text-align: center; padding: 40px; color: var(--text-light);">No products found.</div>`;
+        productGrid.innerHTML = `
+            <div style="grid-column: 1/-1; text-align: center; padding: 100px 0;">
+                <p style="color: var(--text-secondary); opacity: 0.5;">No artifacts found in this sector.</p>
+            </div>`;
         return;
     }
 
-    productGrid.innerHTML = list.map((product, index) => `
-        <div class="product-card" style="animation-delay: ${index * 0.1}s">
-            <div class="product-image-container" onclick="openQuickView('${product.id}')" style="cursor: pointer;">
-                ${index < 2 ? '<div class="product-tag">New Arrival</div>' : ''}
-                <img src="${(product.imageUrl && product.imageUrl.includes('/upload/') && !product.imageUrl.includes('f_auto,q_auto')) ? product.imageUrl.replace('/upload/', '/upload/f_auto,q_auto/') : (product.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image')}" alt="${product.name}" class="product-image" loading="${index < 4 ? 'eager' : 'lazy'}">
-            </div>
-            <div class="product-info">
-                <h3 onclick="openQuickView('${product.id}')" style="cursor: pointer;">${product.name}</h3>
-                <p>${product.description || 'No description available.'}</p>
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 20px;">
-                    <span class="price">$${parseFloat(product.price).toFixed(2)}</span>
-                    <button class="add-to-cart-btn" onclick="addToCart('${product.id}')" style="width: auto; padding: 10px 20px; font-size: 0.8rem;">
-                        Add to Cart
-                    </button>
+    productGrid.innerHTML = list.map((p, index) => {
+        const isVid = p.imageUrl && isVideo(p.imageUrl);
+        const optimizedUrl = isVid ? p.imageUrl : getOptimizedMedia(p.imageUrl);
+        const hasDiscount = p.discountPrice && p.discountPrice < p.price;
+        const displayPrice = hasDiscount ? p.discountPrice : p.price;
+
+        return `
+            <div class="product-card" data-aos style="transition-delay: ${index * 0.1}s">
+                <div class="product-img-container" onclick="openQuickView('${p.id}')" style="cursor: pointer;">
+                    ${hasDiscount ? `<div class="product-badge" style="background: var(--danger); border-color: var(--danger); color: white;">SALE</div>` : ''}
+                    ${isVid ?
+                `<video class="product-video" src="${optimizedUrl}" autoplay muted loop playsinline></video>` :
+                `<img class="product-img" src="${optimizedUrl}" alt="${p.name}" loading="${index < 6 ? 'eager' : 'lazy'}">`
+            }
+                    <div class="product-overlay">
+                        <button class="btn-primary">Quick View</button>
+                    </div>
+                </div>
+                <div class="product-info">
+                    <h3>${p.name}</h3>
+                    <p>${p.description || 'Premium curated artifact.'}</p>
+                    <div class="product-footer">
+                        <div class="price-stack" style="text-align: left;">
+                            ${hasDiscount ? `<span class="formal-price">$${parseFloat(p.price).toLocaleString()}</span>` : ''}
+                            <span class="price" style="font-size: 1.2rem; font-weight: 700; color: var(--accent-color);">$${parseFloat(displayPrice).toLocaleString()}</span>
+                        </div>
+                        <div class="add-btn" onclick="addToCart('${p.id}'); event.stopPropagation();">
+                            <i class="fas fa-plus"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    `).join('');
-}
-
-// SEARCH LOGIC
-window.searchProducts = () => {
-    const query = document.getElementById('search-input').value.toLowerCase();
-    const filteredProducts = products.filter(product =>
-        product.name.toLowerCase().includes(query) ||
-        (product.description && product.description.toLowerCase().includes(query))
-    );
-
-    if (query && filteredProducts.length === 0) {
-        showToast("No matches found.");
-    }
-    renderProducts(filteredProducts);
+        `;
+    }).join('');
 };
 
 // CART LOGIC
@@ -92,185 +91,230 @@ window.addToCart = (id) => {
     const product = products.find(p => p.id === id);
     if (!product) return;
 
-    const existingItem = cart.find(item => item.id === id);
-    if (existingItem) {
-        existingItem.quantity += 1;
+    const existing = cart.find(item => item.id === id);
+    if (existing) {
+        existing.quantity += 1;
     } else {
         cart.push({ ...product, quantity: 1 });
     }
 
+    localStorage.setItem('niley-cart', JSON.stringify(cart));
     updateCartUI();
-    saveCart();
-    showToast(`${product.name} added to cart!`);
-
-    // Pulse animation for the badge
-    const badge = document.getElementById('cart-count');
-    if (badge) {
-        badge.classList.remove('pulse-animation');
-        void badge.offsetWidth; // Trigger reflow
-        badge.classList.add('pulse-animation');
-    }
+    showToast(`${product.name} added to bag`);
 };
 
-function removeFromCart(id) {
+window.removeFromCart = (id) => {
     cart = cart.filter(item => item.id !== id);
+    localStorage.setItem('niley-cart', JSON.stringify(cart));
     updateCartUI();
-    saveCart();
-}
-window.removeFromCart = removeFromCart;
+};
 
 function updateCartUI() {
+    const cartItemsContainer = document.getElementById('cart-items');
+    const cartCountSpan = document.getElementById('cart-count');
+    const cartTotalSpan = document.getElementById('cart-total');
+
+    if (!cartItemsContainer) return;
+
     const count = cart.reduce((acc, item) => acc + item.quantity, 0);
-    cartCountSpan.innerText = count;
+    if (cartCountSpan) cartCountSpan.innerText = count;
 
-    const total = cart.reduce((acc, item) => acc + (parseFloat(item.price) * item.quantity), 0);
-    cartTotalSpan.innerText = `$${total.toFixed(2)}`;
+    const total = cart.reduce((acc, item) => {
+        const priceToUse = item.discountPrice && item.discountPrice < item.price ? item.discountPrice : item.price;
+        return acc + (parseFloat(priceToUse) * item.quantity);
+    }, 0);
+    if (cartTotalSpan) cartTotalSpan.innerText = `$${total.toLocaleString()}`;
 
     if (cart.length === 0) {
-        cartItemsContainer.innerHTML = '<p style="text-align: center; color: var(--text-light); margin-top: 20px;">Your bag is empty.</p>';
-    } else {
-        cartItemsContainer.innerHTML = cart.map(item => `
-            <div class="cart-item">
-                <div style="flex: 1;">
-                    <strong>${item.name}</strong><br>
-                    <small>$${parseFloat(item.price).toFixed(2)} x ${item.quantity}</small>
-                </div>
-                <button onclick="removeFromCart('${item.id}')" style="color: var(--danger-color); background: none; font-size: 1.2rem; cursor: pointer; padding: 5px;">&times;</button>
+        cartItemsContainer.innerHTML = `
+            <div style="text-align:center; padding: 40px 0; opacity: 0.5;">
+                <i class="fas fa-shopping-bag" style="font-size: 2rem; margin-bottom: 10px;"></i>
+                <p>Bag is empty</p>
             </div>
-        `).join('');
-    }
-}
-
-function saveCart() {
-    localStorage.setItem('niley-cart', JSON.stringify(cart));
-}
-
-function loadCart() {
-    const saved = localStorage.getItem('niley-cart');
-    if (saved) {
-        cart = JSON.parse(saved);
-        updateCartUI();
-    }
-}
-
-// Helper: Show Toast
-function showToast(message) {
-    const toast = document.getElementById("toast");
-    if (!toast) return;
-    toast.innerText = message;
-    toast.className = "toast show";
-    setTimeout(function () { toast.className = toast.className.replace("show", ""); }, 4000);
-}
-
-// CHECKOUT (WhatsApp Integration)
-window.checkout = async () => {
-    if (cart.length === 0) {
-        showToast("Your cart is empty!");
-        return;
-    }
-
-    let cartItemsText = "";
-    let cartTotal = 0;
-
-    cart.forEach(item => {
-        const itemTotal = parseFloat(item.price) * item.quantity;
-        cartItemsText += `📦 ${item.name} (x${item.quantity}) - $${itemTotal.toFixed(2)}%0A`;
-        cartTotal += itemTotal;
-    });
-
-    const text = `Hi Niley! I'd like to place an order:%0A%0A${cartItemsText}%0A%0ATotal: $${cartTotal.toFixed(2)}%0A%0APlease confirm availability.`;
-    const waLink = `https://wa.me/${WHATSAPP_NUMBER}?text=${text}`;
-
-    window.open(waLink, '_blank');
-    showToast("Opening WhatsApp with your order!");
-};
-
-// Filter Logic for Categories
-window.filterCategory = (category, element) => {
-    // Scroll to products
-    const section = document.getElementById('product-grid');
-    if (section) section.scrollIntoView({ behavior: 'smooth' });
-
-    // Update active state in UI
-    const cards = document.querySelectorAll('.featured-card');
-    cards.forEach(card => card.classList.remove('active'));
-
-    // If element is passed directly (from onclick="filterCategory('All', this)")
-    if (element) {
-        element.classList.add('active');
+        `;
     } else {
-        // Fallback: find by span text
-        cards.forEach(card => {
-            if (card.querySelector('span').innerText === category) {
-                card.classList.add('active');
-            }
-        });
+        cartItemsContainer.innerHTML = cart.map(item => {
+            const priceToUse = item.discountPrice && item.discountPrice < item.price ? item.discountPrice : item.price;
+            return `
+                <div class="cart-item">
+                    <img src="${getOptimizedMedia(item.imageUrl)}" class="cart-item-img">
+                    <div class="cart-item-info">
+                        <div class="cart-item-title">${item.name}</div>
+                        <div class="cart-item-price">$${parseFloat(priceToUse).toLocaleString()} &times; ${item.quantity}</div>
+                    </div>
+                    <button onclick="removeFromCart('${item.id}')" style="background: none; border: none; color: var(--danger); cursor: pointer;">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            `;
+        }).join('');
     }
+}
 
-    let filtered = products;
-
-    if (category === 'Trending') {
-        filtered = products.slice(0, 3);
-    } else if (category === 'Gadgets') {
-        filtered = products.filter(p =>
-            /phone|watch|laptop|tablet|gadget/i.test((p.name || "") + (p.description || ""))
-        );
-    } else if (category === 'Audio') {
-        filtered = products.filter(p =>
-            /audio|headphone|speaker|earbud|sound/i.test((p.name || "") + (p.description || ""))
-        );
-    } else if (category === 'Smart Home') {
-        filtered = products.filter(p =>
-            /smart|home|light|bulb|alexa|google/i.test((p.name || "") + (p.description || ""))
-        );
-    }
-
-    if (filtered.length === 0 && category !== 'All') {
-        showToast(`No ${category} products found.`);
-        renderProducts(products);
-    } else {
-        renderProducts(filtered);
-        showToast(`Showing ${category}`);
-    }
-};
-
-
-// QUICK VIEW MODAL LOGIC
+// QUICK VIEW
 window.openQuickView = (id) => {
-    const product = products.find(p => p.id === id);
-    if (!product) return;
+    const p = products.find(p => p.id === id);
+    if (!p) return;
 
-    const imgUrl = (product.imageUrl && product.imageUrl.includes('/upload/') && !product.imageUrl.includes('f_auto,q_auto'))
-        ? product.imageUrl.replace('/upload/', '/upload/f_auto,q_auto/')
-        : (product.imageUrl || 'https://via.placeholder.com/300x200?text=No+Image');
+    const mediaUrl = getOptimizedMedia(p.imageUrl);
+    const video = isVideo(p.imageUrl);
+    const container = document.getElementById('qv-media-container');
 
-    const qvImage = document.getElementById('qv-image');
-    if (qvImage) qvImage.src = imgUrl;
+    if (container) {
+        container.innerHTML = video ?
+            `<video src="${mediaUrl}" autoplay muted loop playsinline style="width:100%; height:100%; object-fit:cover;"></video>` :
+            `<img src="${mediaUrl}" alt="${p.name}" style="width:100%; height:100%; object-fit:cover;">`;
+    }
 
-    document.getElementById('qv-title').innerText = product.name;
-    document.getElementById('qv-price').innerText = `$${parseFloat(product.price).toFixed(2)}`;
-    document.getElementById('qv-description').innerText = product.description || 'No detailed description available.';
+    const hasDiscount = p.discountPrice && p.discountPrice < p.price;
+    const displayPrice = hasDiscount ? p.discountPrice : p.price;
+
+    document.getElementById('qv-title').innerText = p.name;
+    document.getElementById('qv-price').innerHTML = hasDiscount ?
+        `<span class="formal-price" style="margin-right: 12px; font-size: 1.1rem;">$${parseFloat(p.price).toLocaleString()}</span> 
+         <span style="font-size: 1.8rem; font-weight: 700; color: var(--accent-color);">$${parseFloat(p.discountPrice).toLocaleString()}</span>` :
+        `<span style="font-size: 1.8rem; font-weight: 700; color: var(--accent-color);">$${parseFloat(p.price).toLocaleString()}</span>`;
+    document.getElementById('qv-description').innerText = p.description || "No description available.";
 
     const qvBtn = document.getElementById('qv-btn');
     if (qvBtn) {
-        const newBtn = qvBtn.cloneNode(true);
-        qvBtn.parentNode.replaceChild(newBtn, qvBtn);
-
-        newBtn.onclick = () => {
-            addToCart(product.id);
-            closeQuickView();
+        qvBtn.onclick = () => {
+            addToCart(p.id);
+            window.closeQuickView();
+            window.toggleCart();
         };
     }
 
-    const modal = document.getElementById('quick-view-modal');
-    if (modal) modal.classList.add('open');
+    document.getElementById('quick-view-modal').classList.add('active');
 };
 
-window.closeQuickView = (e) => {
-    if (e && e.target !== e.currentTarget && !e.target.classList.contains('close-modal')) return;
+window.closeQuickView = () => {
     const modal = document.getElementById('quick-view-modal');
-    if (modal) modal.classList.remove('open');
+    if (modal) modal.classList.remove('active');
 };
 
-// Run Init
-init();
+// CHECKOUT (Instagram DM Approach - EXCLUSIVE)
+window.checkout = () => {
+    if (cart.length === 0) {
+        showToast("Bag is empty");
+        return;
+    }
+
+    let message = "Hi NILEY! I'm interested in placing an order:%0A%0A";
+    let total = 0;
+
+    cart.forEach(item => {
+        const priceToUse = item.discountPrice && item.discountPrice < item.price ? item.discountPrice : item.price;
+        const itemTotal = parseFloat(priceToUse) * item.quantity;
+        message += `• ${item.name} (${item.quantity}x) - $${itemTotal.toLocaleString()}%0A`;
+        total += itemTotal;
+    });
+
+    message += `%0A*Total: $${total.toLocaleString()}*%0A%0AI found these artifacts on your site. Are they available?`;
+
+    const igLink = `https://ig.me/m/niely_2423?text=${message}`;
+    window.open(igLink, '_blank');
+
+    showToast("Redirecting to Instagram DM...");
+};
+
+// FILTER CATEGORIES
+window.filterCategory = (category, element) => {
+    const items = document.querySelectorAll('.chip');
+    const isAlreadyActive = element && element.classList.contains('active');
+
+    if (isAlreadyActive && category !== 'All') {
+        const allChip = document.querySelector('.chip[onclick*="\'All\'"]');
+        return window.filterCategory('All', allChip);
+    }
+
+    items.forEach(c => c.classList.remove('active'));
+
+    if (element) {
+        element.classList.add('active');
+    } else {
+        items.forEach(c => {
+            if (c.innerText.includes(category)) c.classList.add('active');
+        });
+    }
+
+    const heading = document.getElementById('current-category-name');
+    if (heading) heading.innerText = category === 'All' ? 'The Collection' : category;
+
+    let filtered = products;
+    if (category === 'Trending') {
+        filtered = products.slice(0, 3);
+    } else if (category === 'Gadgets') {
+        filtered = products.filter(p => /phone|watch|laptop|tablet|gadget/i.test((p.name || "") + (p.description || "")));
+    } else if (category === 'Audio') {
+        filtered = products.filter(p => /audio|headphone|speaker|earbud|sound/i.test((p.name || "") + (p.description || "")));
+    } else if (category === 'Smart Home') {
+        filtered = products.filter(p => /smart|home|light|bulb|alexa|google/i.test((p.name || "") + (p.description || "")));
+    }
+
+    renderProducts(filtered);
+
+    if (window.innerWidth < 1024) {
+        window.scrollTo({ top: document.getElementById('collection').offsetTop - 100, behavior: 'smooth' });
+    }
+};
+
+// SEARCH
+window.searchProducts = (event) => {
+    const input = document.getElementById('search-input');
+    const query = input.value.toLowerCase().trim();
+
+    const filtered = products.filter(p =>
+        p.name.toLowerCase().includes(query) ||
+        (p.description && p.description.toLowerCase().includes(query))
+    );
+
+    if (query && filtered.length === 0) {
+        if (productGrid) {
+            productGrid.innerHTML = `
+                <div style="grid-column: 1/-1; text-align: center; padding: 100px 20px;">
+                    <i class="fas fa-search-minus" style="font-size: 3rem; color: var(--text-secondary); opacity: 0.3; margin-bottom: 20px;"></i>
+                    <h3 style="color: var(--text-secondary); font-weight: 300; text-transform: uppercase;">Artifact Not Found</h3>
+                    <p style="margin-top: 10px; color: var(--text-secondary); opacity: 0.6;">We don't have that in the vault right now.</p>
+                    <button class="btn-outline" style="margin-top: 24px;" onclick="window.filterCategory('All')">Explore All Artifacts</button>
+                </div>
+            `;
+        }
+    } else {
+        renderProducts(filtered);
+    }
+
+    if (event && event.key === 'Enter') {
+        window.toggleSearch();
+        window.scrollTo({ top: document.getElementById('collection').offsetTop - 100, behavior: 'smooth' });
+        input.blur();
+    }
+};
+
+// TOAST
+function showToast(message) {
+    const toast = document.getElementById('toast');
+    if (!toast) return;
+    toast.innerText = message;
+    toast.classList.add('active');
+    setTimeout(() => toast.classList.remove('active'), 3000);
+}
+
+// EVENTS
+document.addEventListener('DOMContentLoaded', () => {
+    initShop();
+    const searchInput = document.getElementById('search-input');
+    if (searchInput) {
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') window.searchProducts(e);
+        });
+    }
+});
+
+// UI Toggles
+window.toggleCart = () => document.getElementById('cart-panel').classList.toggle('active');
+window.toggleSearch = () => {
+    const overlay = document.getElementById('search-overlay');
+    overlay.style.display = overlay.style.display === 'block' ? 'none' : 'block';
+    if (overlay.style.display === 'block') document.getElementById('search-input').focus();
+};
