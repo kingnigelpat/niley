@@ -186,31 +186,32 @@ async function loadProducts() {
     currentProducts = [];
 
     try {
-        // Primary Query: Ordered by Date
-        let q = query(collection(db, "products"), orderBy("createdAt", "desc"));
-        let querySnapshot;
+        const querySnapshot = await getDocs(collection(db, "products"));
+        
+        let fetchedProducts = [];
+        querySnapshot.forEach((docSnap) => {
+            const data = docSnap.data();
+            data.id = docSnap.id;
+            fetchedProducts.push(data);
+        });
 
-        try {
-            querySnapshot = await getDocs(q);
-        } catch (queryError) {
-            console.warn("Ordered query failed (likely missing index), falling back to basic fetch.");
-            // Fallback: Basic Query (if index isn't ready or createdAt missing)
-            q = collection(db, "products");
-            querySnapshot = await getDocs(q);
-        }
+        // Safe JavaScript Sorting (Prevents older products without createdAt from disappearing)
+        fetchedProducts.sort((a, b) => {
+            const dateA = new Date(a.createdAt || a.updatedAt || 0);
+            const dateB = new Date(b.createdAt || b.updatedAt || 0);
+            return dateB - dateA;
+        });
 
         const totalCountEl = document.getElementById('total-count');
-        if (totalCountEl) totalCountEl.innerText = querySnapshot.size;
+        if (totalCountEl) totalCountEl.innerText = fetchedProducts.length;
 
-        if (querySnapshot.empty) {
+        if (fetchedProducts.length === 0) {
             productList.innerHTML = '<div style="text-align:center; padding: 40px; opacity:0.5;"><i class="fas fa-box-open" style="font-size:2rem; margin-bottom:10px;"></i><p>Vault is empty. Add your first masterpiece.</p></div>';
             return;
         }
 
         productList.innerHTML = '';
-        querySnapshot.forEach((docSnap) => {
-            const data = docSnap.data();
-            data.id = docSnap.id;
+        fetchedProducts.forEach((data) => {
             currentProducts.push(data);
 
             const div = document.createElement('div');
