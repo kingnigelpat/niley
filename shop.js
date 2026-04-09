@@ -210,7 +210,7 @@ window.toggleTheme = () => {
     // Update Icon
     const themeIcon = document.querySelector('#theme-toggle i');
     if (themeIcon) {
-        themeIcon.className = nextTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+        themeIcon.className = nextTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
     }
 
     showToast(`Switched to ${nextTheme} mode`);
@@ -291,14 +291,14 @@ window.filterCategory = (category, element) => {
     if (heading) heading.innerText = category === 'All' ? 'The Collection' : category;
 
     let filtered = products;
-    if (category === 'Trending') {
+    if (category === 'Bestsellers') {
         filtered = products.slice(0, 3);
-    } else if (category === 'Gadgets') {
-        filtered = products.filter(p => /phone|watch|laptop|tablet|gadget/i.test((p.name || "") + (p.description || "")));
-    } else if (category === 'Audio') {
-        filtered = products.filter(p => /audio|headphone|speaker|earbud|sound/i.test((p.name || "") + (p.description || "")));
-    } else if (category === 'Smart Home') {
-        filtered = products.filter(p => /smart|home|light|bulb|alexa|google/i.test((p.name || "") + (p.description || "")));
+    } else if (category === 'Lighting') {
+        filtered = products.filter(p => p.category === 'Lighting' || (!p.category && /light|lamp|neon|led|chandelier|sconce/i.test((p.name || "") + (p.description || ""))));
+    } else if (category === 'LED & Neon') {
+        filtered = products.filter(p => p.category === 'LED & Neon' || (!p.category && /neon|led|sign|strip|glow/i.test((p.name || "") + (p.description || ""))));
+    } else if (category === 'Accents') {
+        filtered = products.filter(p => p.category === 'Accents' || (!p.category && /cushion|rug|accent|sculpture|vase|plant|decor/i.test((p.name || "") + (p.description || ""))));
     }
 
     renderProducts(filtered);
@@ -355,7 +355,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const savedTheme = localStorage.getItem('niley-theme') || 'dark';
     document.documentElement.setAttribute('data-theme', savedTheme);
     const themeIcon = document.querySelector('#theme-toggle i');
-    if (themeIcon) themeIcon.className = savedTheme === 'dark' ? 'fas fa-moon' : 'fas fa-sun';
+    if (themeIcon) themeIcon.className = savedTheme === 'dark' ? 'fas fa-sun' : 'fas fa-moon';
 
     initShop();
 

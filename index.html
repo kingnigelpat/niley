@@ -9,9 +9,6 @@
         content="Niley is a boutique gallery of curated lifestyle artifacts. Available exclusively on Instagram.">
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-
-    <!-- Firebase is now handled inside shop.js module -->
-    <script type="module" src="shop.js"></script>
 </head>
 
 <body>
@@ -30,7 +27,7 @@
             </a>
             <div class="nav-actions">
                 <button class="icon-btn" onclick="toggleTheme()" id="theme-toggle" title="Switch Theme">
-                    <i class="fas fa-moon"></i>
+                    <i class="fas fa-sun"></i>
                 </button>
                 <button class="icon-btn" onclick="toggleSearch()">
                     <i class="fas fa-search"></i>
@@ -43,14 +40,29 @@
         </div>
     </nav>
 
-    <!-- Hero Section -->
     <header class="hero">
+        <div class="hero-bg"></div>
         <div class="container hero-content">
-            <h1 class="text-gradient" data-aos>Upgrade Your World.</h1>
-            <p data-aos style="transition-delay: 0.2s">Elegance in the essentials. Curated with care for your
-                collection.</p>
+            <h1 class="text-gradient" data-aos>Curate Your<br>Perfect Ambience.</h1>
+            <p data-aos style="transition-delay: 0.2s">Discover our premium collection of room and space decor designed to elevate your home aesthetics.</p>
             <div class="cta-group" data-aos style="transition-delay: 0.4s">
-                <a href="#collection" class="btn-primary">Explore Collection</a>
+                <a href="#collection" class="btn-primary">Shop The Collection</a>
+                <a href="#" onclick="toggleSearch(); return false;" class="btn-outline">Explore Styles</a>
+            </div>
+            
+            <div class="hero-highlights" data-aos style="transition-delay: 0.6s">
+                <div class="highlight-item">
+                    <span class="highlight-number">5k+</span>
+                    <span class="highlight-text">Curated Items</span>
+                </div>
+                <div class="highlight-item">
+                    <span class="highlight-number">10k+</span>
+                    <span class="highlight-text">Happy Homes</span>
+                </div>
+                <div class="highlight-item">
+                    <span class="highlight-number">100%</span>
+                    <span class="highlight-text">Authentic</span>
+                </div>
             </div>
         </div>
     </header>
@@ -63,17 +75,17 @@
                 <button class="chip active" onclick="filterCategory('All', this)">
                     <i class="fas fa-layer-group"></i> All
                 </button>
-                <button class="chip" onclick="filterCategory('Trending', this)">
-                    <i class="fas fa-fire"></i> Trending
+                <button class="chip" onclick="filterCategory('Bestsellers', this)">
+                    <i class="fas fa-fire"></i> Bestsellers
                 </button>
-                <button class="chip" onclick="filterCategory('Gadgets', this)">
-                    <i class="fas fa-microchip"></i> Gadgets
+                <button class="chip" onclick="filterCategory('Lighting', this)">
+                    <i class="fas fa-lightbulb"></i> Lighting
                 </button>
-                <button class="chip" onclick="filterCategory('Audio', this)">
-                    <i class="fas fa-volume-up"></i> Audio
+                <button class="chip" onclick="filterCategory('LED & Neon', this)">
+                    <i class="fas fa-bolt"></i> LED & Neon
                 </button>
-                <button class="chip" onclick="filterCategory('Smart Home', this)">
-                    <i class="fas fa-broadcast-tower"></i> Smart Home
+                <button class="chip" onclick="filterCategory('Accents', this)">
+                    <i class="fas fa-couch"></i> Accents
                 </button>
             </div>
         </div>
@@ -187,11 +199,6 @@
             if (overlay.style.display === 'block') {
                 document.getElementById('search-input').focus();
             }
-        }
-
-        function toggleTheme() {
-            // Already dark by default now, keeping for compatibility if needed
-            console.log("Premium mode enabled.");
         }
 
         // AOS (Animation on Scroll) Simple Implementation

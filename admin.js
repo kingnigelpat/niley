@@ -143,6 +143,7 @@ productForm.addEventListener('submit', async (e) => {
     try {
         const id = document.getElementById('p-id').value;
         const name = document.getElementById('name').value;
+        const category = document.getElementById('category').value;
         const formalPrice = parseFloat(document.getElementById('formal-price').value);
         const discountPriceInput = document.getElementById('discount-price').value;
         const discountPrice = discountPriceInput ? parseFloat(discountPriceInput) : null;
@@ -152,6 +153,7 @@ productForm.addEventListener('submit', async (e) => {
 
         const productData = {
             name,
+            category,
             price: formalPrice, // Original price
             discountPrice: discountPrice, // Sale price
             description: desc,
@@ -223,13 +225,13 @@ async function loadProducts() {
                     `<video src="${data.imageUrl}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;" autoplay muted loop></video>` :
                     `<img src="${data.imageUrl || 'https://via.placeholder.com/60'}" style="width: 60px; height: 60px; object-fit: cover; border-radius: 8px;">`
                 }
-                <div style="flex-grow: 1;">
-                    <h4 style="margin: 0; font-size: 1rem;">${data.name}</h4>
-                    <p style="margin: 0; font-weight: 600;">
+                <div style="flex-grow: 1; min-width: 0;">
+                    <h4 style="margin: 0; font-size: 1rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${data.name} <span style="font-size: 0.6rem; background: var(--card-border); padding: 3px 6px; border-radius: 4px; vertical-align: middle; margin-left: 5px;">${data.category || 'Uncategorized'}</span></h4>
+                    <p style="margin: 0; font-weight: 600; margin-top: 4px;">
                         ${hasDiscount ?
-                    `<span style="color: var(--danger); text-decoration: line-through; font-size: 0.8rem; opacity: 0.6;">$${data.price}</span> 
-                             <span style="color: var(--accent-color);">$${data.discountPrice}</span>` :
-                    `<span style="color: var(--accent-color);">$${data.price}</span>`
+                    `<span style="color: var(--danger); text-decoration: line-through; font-size: 0.8rem; opacity: 0.6;">$${parseFloat(data.price).toLocaleString()}</span> 
+                             <span style="color: var(--accent-color);">$${parseFloat(data.discountPrice).toLocaleString()}</span>` :
+                    `<span style="color: var(--accent-color);">$${parseFloat(data.price).toLocaleString()}</span>`
                 }
                     </p>
                 </div>
@@ -262,6 +264,7 @@ window.editProduct = (id) => {
 
     document.getElementById('p-id').value = product.id;
     document.getElementById('name').value = product.name;
+    document.getElementById('category').value = product.category || "Lighting";
     document.getElementById('formal-price').value = product.price;
     document.getElementById('discount-price').value = product.discountPrice || "";
     document.getElementById('description').value = product.description || "";
@@ -290,6 +293,7 @@ window.deleteProduct = async (id) => {
 window.clearForm = () => {
     productForm.reset();
     document.getElementById('p-id').value = "";
+    document.getElementById('category').value = "Lighting";
     formTitle.innerText = "Add New Artifact";
     submitBtn.innerText = "Save to Vault";
     productMedia = "";
